@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<!-- code that should be in head -->
+<link rel="stylesheet" href="testcss.css"> 
+<!-- head code ended -->
+
+
+
+</head>
+
+
+
+<!-- code should be before body tag -->
+<script>
+function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var cookieList = decodedCookie.split(';');
+    for(var i = 0; i < cookieList.length; i++) {
+        var c = cookieList[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+function setCookie(cname) {
+    var exdays = 30;
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires=" + d.toGMTString();
+    if ( getCookie(cname) == ""){
+        document.cookie=cname+"=1";
+    }
+    else{
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var cookieList = decodedCookie.split(';');
+        var s = "";
+        for(var i = 0; i < cookieList.length; i++) {
+            var c = cookieList[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                var tempCount = parseInt(c.substring(name.length, c.length),10) + 1;
+                s=name+tempCount.toString();
+                break;
+            }
+        }
+        document.cookie=s;
+    }   
+}
+function setClientId(){
+    var ClientId='_' + Math.random().toString(36).substr(2, 9);
+    document.cookie='clientId='+ClientId;
+    return ClientId;
+}
+function sendData(jsonData){
+    var settings = {
+        "async": true,
+        "crossDomain": true,
+        "url": "https://prod-11.centralindia.logic.azure.com:443/workflows/23b325ff5aa34b1f93ba961081a6393f/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=sGTSoiZtj3P3EEfLp05pW89EWeFsGWxUbDJnuiFvEyQ",
+        "method": "POST",
+        "headers": {
+        "content-type": "application/json",
+        "cache-control": "no-cache",
+        "postman-token": "545da4bb-3518-a25c-293d-460abb5d769c"
+        },
+        "processData": false,
+        "data": jsonData
+    }
+    $.ajax(settings).done(function (response) {
+      console.log(response);
+    });
+}
+function createData( page_name,eventName = ""){
+    var clientId = getCookie("clientId");
+    if( clientId==""){
+        clientId=setClientId();
+	}	
+	var visit=getCookie("visit");
+	var name=document.forms["myform"]["name"].value;
+	var mail=document.forms["myform"]["mail"].value;
+	var mobNo=document.forms["myform"]["mobileNo"].value;
+	var jsondata=JSON.stringify({ "clientId":clientId, "name": name, "email":mail, "mobileNo":mobNo,"pageName":page_name,"noOfVisit":visit,"discription":[eventName]});
+	// send this json object to some server.
+	sendData(jsondata);
+}
+/* capturing first visit*/
+setCookie("visit");
+
+</script>
+<!--  script code ended-->
+
+
+<body>
+
+
+
+<!--   Code that should be in body tag */ -->
+
+<h2>Let us contact you! </h2>
+<button onclick="document.getElementById('id01').style.display='block'" style="width:auto;">Click Here</button>
+
+<div id="id01" class="modal"> 
+  <form class="modal-content animate" name="myform" action="/action_page.php">
+    <div class="container">
+      <label><b>Name</b></label><input type="text" placeholder="Enter Username" name="name" >
+      <label><b>Email</b></label><input type="text" placeholder="Enter Email" name="mail" >
+      <label><b>Contact No.</b></label><input type="text" placeholder="Enter Contact No." name="mobileNo" >
+      <button type="submit">Submit</button>
+    </div>
+  </form>
+</div>
+
+<script>
+var modal = document.getElementById('id01');
+window.onclick = function(event) {if (event.target == modal) { modal.style.display = "none";}}
+</script>
+
+<!--  body code end  -->
+
+
+
+
+
+
+
+</body>
+</html>
